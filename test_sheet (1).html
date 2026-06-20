@@ -3,36 +3,709 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>اختبار الاتصال بالشيت</title>
+<title>البوابة الذكية</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&display=swap');
+:root{
+  --blue-dark:#0c2d6b;--blue-mid:#1a4da0;--blue-light:#2e6fd4;--blue-pale:#e8f0fc;
+  --green:#1a7a4a;--green-pale:#e6f4ee;
+  --amber:#a05c00;--amber-pale:#fff3dc;
+  --purple:#5b2d9e;--purple-pale:#f0eafd;
+  --teal:#0f6b6b;--teal-pale:#e4f5f5;
+  --red:#b81c1c;--red-pale:#fdeaea;
+  --orange:#b84c00;--orange-pale:#fff0e6;
+  --gray-900:#1a1d2e;--gray-700:#3d4155;--gray-500:#6b7080;
+  --gray-300:#c8ccd8;--gray-100:#f2f4f9;
+  --shadow-md:0 4px 16px rgba(12,45,107,.12);
+  --shadow-lg:0 8px 32px rgba(12,45,107,.18);
+  --r-sm:8px;--r-md:12px;--r-lg:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Tajawal',sans-serif;background:var(--gray-100);color:var(--gray-900);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+header{background:linear-gradient(135deg,var(--blue-dark) 0%,var(--blue-mid) 60%,var(--blue-light) 100%);color:white;padding:0 2rem;box-shadow:var(--shadow-lg)}
+.hdr{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:14px;height:68px}
+.hdr-icon{width:44px;height:44px;background:rgba(255,255,255,.18);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.hdr-title{font-size:18px;font-weight:700}
+.hdr-sub{font-size:12px;opacity:.75;margin-top:2px}
+.hdr-back{margin-right:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:white;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:500;display:none;align-items:center;gap:6px;transition:all .2s}
+.hdr-back:hover{background:rgba(255,255,255,.25)}
+.hdr-back.show{display:flex}
+
+main{flex:1;max-width:900px;margin:0 auto;width:100%;padding:2rem 1.25rem}
+.page{display:none}.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.anim{animation:fadeUp .35s ease}
+
+/* ══ WELCOME PAGE ══ */
+.welcome-hero{text-align:center;padding:1rem 0 2rem}
+.welcome-icon{width:90px;height:90px;background:linear-gradient(135deg,var(--blue-dark),var(--blue-light));border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:42px;margin:0 auto 1.5rem;box-shadow:var(--shadow-lg)}
+.welcome-hero h1{font-size:26px;font-weight:700;margin-bottom:10px}
+.welcome-hero p{font-size:15px;color:var(--gray-500);margin-bottom:2.5rem;line-height:1.7}
+.choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;max-width:560px;margin:0 auto}
+.choice-card{background:white;border-radius:var(--r-lg);padding:2rem 1.5rem;text-align:center;cursor:pointer;border:2px solid transparent;box-shadow:var(--shadow-md);transition:all .2s}
+.choice-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-lg)}
+.choice-card.prof:hover{border-color:var(--blue-mid)}
+.choice-card.student:hover{border-color:var(--orange)}
+.choice-icon{font-size:48px;margin-bottom:1rem;display:block}
+.choice-title{font-size:18px;font-weight:700;margin-bottom:6px}
+.choice-sub{font-size:13px;color:var(--gray-500)}
+.choice-btn{margin-top:1.25rem;display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:99px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:'Tajawal',sans-serif;transition:all .2s}
+.choice-card.prof .choice-btn{background:var(--blue-pale);color:var(--blue-dark)}
+.choice-card.student .choice-btn{background:var(--orange-pale);color:var(--orange)}
+.choice-card.prof:hover .choice-btn{background:var(--blue-dark);color:white}
+.choice-card.student:hover .choice-btn{background:var(--orange);color:white}
+
+/* ══ SEARCH SHARED ══ */
+.search-card{background:white;border-radius:var(--r-lg);box-shadow:var(--shadow-md);padding:2.5rem 2rem;text-align:center;border:1px solid rgba(12,45,107,.07);margin-bottom:1.5rem}
+.search-icon{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 1.25rem}
+.search-icon.prof-icon{background:var(--blue-pale)}
+.search-icon.student-icon{background:var(--orange-pale)}
+.search-card h2{font-size:21px;font-weight:700;margin-bottom:8px}
+.search-card p{font-size:14px;color:var(--gray-500);margin-bottom:1.75rem;line-height:1.7}
+.input-wrap{display:flex;gap:10px;max-width:460px;margin:0 auto}
+.mat-input{flex:1;height:52px;border:2px solid var(--gray-300);border-radius:var(--r-sm);padding:0 18px;font-size:17px;font-family:'Tajawal',sans-serif;letter-spacing:2px;color:var(--gray-900);background:var(--gray-100);transition:all .2s;text-align:center}
+.mat-input:focus{outline:none;background:white;box-shadow:0 0 0 3px rgba(46,111,212,.15)}
+#prof-id:focus{border-color:var(--blue-light)}
+#student-id:focus{border-color:var(--orange)}
+.search-btn{height:52px;padding:0 22px;color:white;border:none;border-radius:var(--r-sm);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:700;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.search-btn.blue{background:var(--blue-dark)}.search-btn.blue:hover{background:var(--blue-mid)}
+.search-btn.orange{background:var(--orange)}.search-btn.orange:hover{background:#963d00}
+.search-btn:active{transform:scale(.97)}
+.search-btn:disabled{background:var(--gray-300)!important;cursor:not-allowed}
+
+.loading{display:none;text-align:center;padding:2.5rem;color:var(--gray-500)}
+.spinner{width:40px;height:40px;border:3px solid var(--gray-300);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 14px}
+.spinner.blue{border-top-color:var(--blue-mid)}
+.spinner.orange{border-top-color:var(--orange)}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.not-found{display:none;background:white;border-radius:var(--r-lg);box-shadow:var(--shadow-md);padding:2.5rem;text-align:center;border:1px solid #f5c1c1}
+.not-found.show{display:block;animation:fadeUp .3s ease}
+.nf-icon{width:60px;height:60px;background:var(--red-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 1rem}
+.not-found h3{font-size:18px;color:var(--red);margin-bottom:6px}
+.not-found p{font-size:14px;color:var(--gray-500)}
+
+.result-wrap{display:none}.result-wrap.show{display:block;animation:fadeUp .35s ease}
+
+/* PROF HEADER */
+.prof-hdr{color:white;padding:1.5rem 2rem;border-radius:var(--r-lg);display:flex;align-items:center;gap:16px;margin-bottom:1rem;box-shadow:var(--shadow-md)}
+.prof-hdr.blue-hdr{background:linear-gradient(135deg,var(--blue-dark),var(--blue-mid))}
+.prof-hdr.orange-hdr{background:linear-gradient(135deg,#7a2e00,var(--orange))}
+.prof-avatar{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.2);border:3px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0}
+.prof-name{font-size:19px;font-weight:700}
+.prof-mat{font-size:13px;opacity:.75;margin-top:3px}
+
+/* TABS */
+.rtabs{display:flex;border-bottom:2px solid var(--gray-300);margin-bottom:1.25rem;background:white;border-radius:var(--r-md) var(--r-md) 0 0;padding:0 .5rem;box-shadow:0 2px 8px rgba(12,45,107,.06);overflow-x:auto}
+.rtab{padding:12px 16px;border:none;background:none;cursor:pointer;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:500;color:var(--gray-500);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:6px}
+.rtab:hover{color:var(--gray-900)}
+.rtab.active.blue-tab{color:var(--blue-dark);border-bottom-color:var(--blue-dark);font-weight:700}
+.rtab.active.orange-tab{color:var(--orange);border-bottom-color:var(--orange);font-weight:700}
+.rpanel{display:none}.rpanel.active{display:block}
+
+/* INFO CARDS */
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem}
+.info-card{background:white;border-radius:var(--r-md);padding:14px 16px;border:1px solid var(--gray-300);box-shadow:0 1px 4px rgba(12,45,107,.06)}
+.info-card.full{grid-column:span 2}
+.ic-label{font-size:11px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px}
+.ic-value{font-size:16px;font-weight:500;color:var(--gray-900)}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:99px;font-size:14px;font-weight:700}
+.bg-green{background:var(--green-pale);color:var(--green)}
+.bg-amber{background:var(--amber-pale);color:var(--amber)}
+.bg-blue{background:var(--blue-pale);color:var(--blue-dark)}
+.bg-red{background:var(--red-pale);color:var(--red)}
+.bg-purple{background:var(--purple-pale);color:var(--purple)}
+
+/* MATBOUA */
+.mat-card{background:white;border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid rgba(12,45,107,.07)}
+.mat-hdr{background:linear-gradient(135deg,var(--purple),#7c4bc4);color:white;padding:1.25rem 1.75rem;display:flex;align-items:center;gap:12px}
+.mat-hdr-icon{width:44px;height:44px;background:rgba(255,255,255,.18);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mat-hdr-title{font-size:16px;font-weight:700}
+.mat-hdr-sub{font-size:12px;opacity:.8;margin-top:2px}
+.mat-body{padding:1.5rem 1.75rem}
+
+/* STEPPER */
+.stepper{position:relative;padding-right:2.5rem}
+.stepper::before{content:'';position:absolute;right:19px;top:24px;bottom:24px;width:2px;background:var(--gray-300)}
+.step{position:relative;display:flex;align-items:flex-start;gap:14px;margin-bottom:1.5rem}
+.step:last-child{margin-bottom:0}
+.step-dot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;position:relative;z-index:1;font-weight:700}
+.step-done .step-dot{background:var(--green);color:white;border:3px solid var(--green)}
+.step-active .step-dot{background:var(--blue-dark);color:white;border:3px solid var(--blue-light);box-shadow:0 0 0 4px rgba(46,111,212,.2)}
+.step-wait .step-dot{background:white;color:var(--gray-300);border:3px solid var(--gray-300)}
+.step-content{flex:1;padding-top:7px}
+.step-label{font-size:15px;font-weight:700;margin-bottom:3px}
+.step-done .step-label{color:var(--green)}
+.step-active .step-label{color:var(--blue-dark)}
+.step-wait .step-label{color:var(--gray-500)}
+.step-sub{font-size:12px;color:var(--gray-500)}
+.step-active .step-sub{color:var(--blue-mid)}
+.badge-current{display:inline-flex;align-items:center;gap:5px;background:var(--blue-pale);color:var(--blue-dark);padding:3px 11px;border-radius:99px;font-size:12px;font-weight:700;margin-top:5px;border:1px solid #b5cef5}
+.badge-done{display:inline-flex;align-items:center;gap:5px;background:var(--green-pale);color:var(--green);padding:3px 11px;border-radius:99px;font-size:12px;font-weight:700;margin-top:5px}
+
+.experts-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:1.25rem}
+.expert-box{background:var(--gray-100);border:1px solid var(--gray-300);border-radius:var(--r-sm);padding:14px 16px}
+.expert-title{font-size:12px;font-weight:700;color:var(--gray-500);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.expert-row{display:flex;gap:8px;margin-bottom:5px;font-size:13px;align-items:baseline}
+.expert-lbl{color:var(--gray-500);min-width:65px;flex-shrink:0}
+.expert-val{color:var(--gray-900);font-weight:500}
+
+.info-box{border-radius:var(--r-sm);padding:11px 14px;font-size:13px;margin-top:.75rem;display:flex;align-items:flex-start;gap:8px}
+.info-box.blue{background:var(--blue-pale);color:var(--blue-dark);border:1px solid #b5cef5}
+.info-box.amber{background:var(--amber-pale);color:var(--amber);border:1px solid #f5d98a}
+.info-box.green{background:var(--green-pale);color:var(--green);border:1px solid #a8dbb9}
+.no-data{text-align:center;padding:2.5rem;color:var(--gray-500)}
+.no-data-icon{font-size:42px;margin-bottom:10px}
+
+/* INTERACT */
+.interact-card{background:white;border-radius:var(--r-lg);box-shadow:var(--shadow-md);border:1px solid rgba(12,45,107,.07);overflow:hidden}
+.interact-hdr{background:linear-gradient(135deg,var(--teal),#1a9e9e);color:white;padding:1.25rem 1.75rem;display:flex;align-items:center;gap:12px}
+.interact-hdr-icon{width:44px;height:44px;background:rgba(255,255,255,.18);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.interact-hdr-title{font-size:16px;font-weight:700}
+.interact-hdr-sub{font-size:12px;opacity:.8;margin-top:2px}
+.interact-body{padding:1.5rem 1.75rem}
+.section-block{margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--gray-300)}
+.section-block:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.section-label{font-size:14px;font-weight:700;color:var(--gray-700);margin-bottom:.75rem;display:flex;align-items:center;gap:7px}
+.stars-wrap{display:flex;gap:8px;margin-bottom:.75rem}
+.star{font-size:32px;cursor:pointer;opacity:.3;transition:all .15s;line-height:1}
+.star.active{opacity:1;transform:scale(1.1)}
+.rating-label{font-size:13px;color:var(--gray-500);margin-top:4px}
+.msg-textarea{width:100%;border:1.5px solid var(--gray-300);border-radius:var(--r-sm);padding:12px 14px;font-size:14px;font-family:'Tajawal',sans-serif;color:var(--gray-900);background:var(--gray-100);resize:vertical;min-height:90px;transition:all .2s}
+.msg-textarea:focus{outline:none;border-color:var(--blue-light);background:white;box-shadow:0 0 0 3px rgba(46,111,212,.12)}
+.send-btn{margin-top:.75rem;height:42px;padding:0 22px;background:var(--teal);color:white;border:none;border-radius:var(--r-sm);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;font-weight:700;transition:all .2s;display:flex;align-items:center;gap:7px}
+.send-btn:hover{opacity:.85}.send-btn:active{transform:scale(.97)}
+.send-btn:disabled{background:var(--gray-300);cursor:not-allowed}
+.success-msg{display:none;background:var(--green-pale);color:var(--green);border:1px solid #a8dbb9;border-radius:var(--r-sm);padding:12px 16px;font-size:14px;font-weight:500;margin-top:.75rem;align-items:center;gap:8px}
+.success-msg.show{display:flex}
+
+.reset-btn{display:block;margin:1.25rem auto 0;padding:10px 24px;background:none;border:1.5px solid var(--gray-300);border-radius:var(--r-sm);cursor:pointer;font-family:'Tajawal',sans-serif;font-size:14px;color:var(--gray-500);transition:all .2s}
+.reset-btn:hover{border-color:var(--blue-mid);color:var(--blue-mid)}
+
+footer{background:white;border-top:1px solid var(--gray-300);margin-top:auto}
+.footer-social{display:flex;align-items:center;justify-content:center;gap:10px;padding:1rem 1.25rem;flex-wrap:wrap}
+.social-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:99px;font-family:'Tajawal',sans-serif;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;border:1.5px solid transparent}
+.social-btn svg{width:18px;height:18px;flex-shrink:0}
+.social-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.social-btn.website{background:#e8f0fc;color:#0c2d6b;border-color:#b5cef5}.social-btn.website:hover{background:#0c2d6b;color:white}
+.social-btn.facebook{background:#e7f0fd;color:#1877f2;border-color:#b8d0f9}.social-btn.facebook:hover{background:#1877f2;color:white}
+.social-btn.youtube{background:#fdecea;color:#ff0000;border-color:#fbbcba}.social-btn.youtube:hover{background:#ff0000;color:white}
+.social-btn.email{background:#e6f4ee;color:#1a7a4a;border-color:#a8dbb9}.social-btn.email:hover{background:#1a7a4a;color:white}
+.social-btn.whatsapp{background:#e7fced;color:#25d366;border-color:#a3e9b8}.social-btn.whatsapp:hover{background:#25d366;color:white}
+.footer-copy{text-align:center;padding:.75rem 1.25rem;color:var(--gray-500);font-size:12px;border-top:1px solid var(--gray-300)}
+
+@media(max-width:560px){
+  .choice-grid{grid-template-columns:1fr}
+  .input-wrap{flex-direction:column}
+  .search-btn{width:100%;justify-content:center;height:46px}
+  .info-grid,.experts-row{grid-template-columns:1fr}
+  .info-card.full{grid-column:span 1}
+  header{padding:0 1rem}
+  .prof-hdr{padding:1.25rem}
+  .mat-body,.interact-body{padding:1.25rem}
+}
+</style>
 </head>
 <body>
-<h2>اختبار قراءة الشيت</h2>
-<button onclick="test()">اضغط للاختبار</button>
-<div id="out" style="margin-top:20px;font-family:monospace;white-space:pre-wrap"></div>
-<script>
-const ID = '12UhQIFQMI8bZTNj6zfDEzX9-7uhOnDX2LwcBN4dXikE';
 
-async function test(){
-  const out = document.getElementById('out');
-  out.textContent = 'جارٍ الاتصال...';
-  try {
-    const url = `https://docs.google.com/spreadsheets/d/${ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('التربص')}`;
-    const res = await fetch(url);
-    const text = await res.text();
-    const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
-    if(!match){ out.textContent = 'خطأ: لم يُعثر على البيانات\n' + text.substring(0,200); return; }
-    const json = JSON.parse(match[1]);
-    const cols = json.table.cols.map(c => c.label);
-    const rows = json.table.rows.map(row =>
-      Object.fromEntries(cols.map((col,i) => [col, row.c?.[i]?.v ?? '']))
-    );
-    out.textContent = 'عدد الأعمدة: ' + cols.length + '\n';
-    out.textContent += 'الأعمدة: ' + JSON.stringify(cols) + '\n';
-    out.textContent += 'عدد الصفوف: ' + rows.length + '\n';
-    out.textContent += 'أول صف: ' + JSON.stringify(rows[0]) + '\n';
-    if(rows[1]) out.textContent += 'ثاني صف: ' + JSON.stringify(rows[1]) + '\n';
-  } catch(e) {
-    out.textContent = 'خطأ: ' + e.message;
+<header>
+  <div class="hdr">
+    <div class="hdr-icon">🎓</div>
+    <div>
+      <div class="hdr-title">البوابة الذكية</div>
+      <div class="hdr-sub">سكرتير ذكي في خدمة الأستاذ والطالب</div>
+    </div>
+    <button class="hdr-back" id="back-btn" onclick="goHome()">← الرئيسية</button>
+  </div>
+</header>
+
+<main>
+
+<!-- ══ WELCOME PAGE ══ -->
+<div id="page-welcome" class="page active anim">
+  <div class="welcome-hero">
+    <div class="welcome-icon">🏛️</div>
+    <h1>مرحباً بك في البوابة الذكية</h1>
+    <p>منصة إلكترونية متكاملة لخدمة أساتذة وطلبة الدراسات العليا<br>اختر صفتك للمتابعة</p>
+    <div class="choice-grid">
+      <div class="choice-card prof" onclick="goTo('prof')">
+        <span class="choice-icon">👨‍🏫</span>
+        <div class="choice-title">أنا أستاذ</div>
+        <div class="choice-sub">متابعة التربص والمطبوعات البيداغوجية</div>
+        <button class="choice-btn">دخول ←</button>
+      </div>
+      <div class="choice-card student" onclick="goTo('student')">
+        <span class="choice-icon">🎓</span>
+        <div class="choice-title">أنا طالب</div>
+        <div class="choice-sub">متابعة وضعية الملف والمناقشة</div>
+        <button class="choice-btn">دخول ←</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROF PAGE ══ -->
+<div id="page-prof" class="page">
+  <div class="search-card">
+    <div class="search-icon prof-icon">🎫</div>
+    <h2>بوابة الأستاذ</h2>
+    <p>أدخل رقم بطاقتك المهنية (Matricule)<br>للاطلاع على وضعيتك تجاه التربص والمطبوعات</p>
+    <div class="input-wrap">
+      <input class="mat-input" id="prof-id" type="text" placeholder="Matricule"
+        maxlength="20" onkeydown="if(event.key==='Enter')doSearch('prof')" oninput="clearResult('prof')">
+      <button class="search-btn blue" id="prof-search-btn" onclick="doSearch('prof')">🔍 بحث</button>
+    </div>
+  </div>
+  <div class="loading" id="prof-loading"><div class="spinner blue"></div><p>جارٍ البحث...</p></div>
+  <div class="not-found" id="prof-nf">
+    <div class="nf-icon">❌</div>
+    <h3>لم يُعثر على هذا الرقم</h3>
+    <p>تأكد من رقم بطاقتك المهنية وأعد المحاولة.</p>
+    <button class="reset-btn" onclick="clearResult('prof')">🔄 بحث جديد</button>
+  </div>
+  <div class="result-wrap" id="prof-result">
+    <div class="prof-hdr blue-hdr">
+      <div class="prof-avatar" id="p-avatar">--</div>
+      <div><div class="prof-name" id="p-name">--</div><div class="prof-mat" id="p-mat">--</div></div>
+    </div>
+    <div class="rtabs">
+      <button class="rtab active blue-tab" onclick="switchTab('prof','tarbas')">✈️ التربص</button>
+      <button class="rtab blue-tab" onclick="switchTab('prof','matboua')">📄 المطبوعات والمؤلفات</button>
+      <button class="rtab blue-tab" onclick="switchTab('prof','makhbar')">🔬 مخبر البحث</button>
+      <button class="rtab blue-tab" onclick="switchTab('prof','interact')">💬 رسالة وتقييم</button>
+    </div>
+    <div id="prof-rp-tarbas" class="rpanel active">
+      <div class="info-grid">
+        <div class="info-card"><div class="ic-label">📚 القسم</div><div class="ic-value" id="p-dept">--</div></div>
+        <div class="info-card"><div class="ic-label">🏅 الرتبة العلمية</div><div class="ic-value" id="p-grade">--</div></div>
+        <div class="info-card"><div class="ic-label">✈️ بلد الوجهة</div><div class="ic-value" id="p-pays">--</div></div>
+        <div class="info-card"><div class="ic-label">📅 عدد أيام التربص</div><div class="ic-value" id="p-jours">--</div></div>
+        <div class="info-card full"><div class="ic-label">📋 الوضعية</div><div class="ic-value" id="p-status">--</div></div>
+      </div>
+    </div>
+    <div id="prof-rp-matboua" class="rpanel">
+      <div class="mat-card">
+        <div class="mat-hdr">
+          <div class="mat-hdr-icon">📄</div>
+          <div><div class="mat-hdr-title">متابعة المطبوعات والمؤلفات البيداغوجية</div><div class="mat-hdr-sub" id="p-mat-dept">--</div></div>
+        </div>
+        <div class="mat-body" id="p-mat-body"><div class="no-data"><div class="no-data-icon">📭</div><p>لا توجد مطبوعة مسجلة.</p></div></div>
+      </div>
+    </div>
+    <div id="prof-rp-makhbar" class="rpanel">
+      <div class="mat-card">
+        <div class="mat-hdr" style="background:linear-gradient(135deg,#0f6b6b,#1a9e9e)">
+          <div class="mat-hdr-icon">🔬</div>
+          <div><div class="mat-hdr-title">مخبر البحث العلمي</div><div class="mat-hdr-sub" id="p-lab-name">--</div></div>
+        </div>
+        <div class="mat-body" id="p-lab-body">
+          <div class="no-data"><div class="no-data-icon">🔬</div><p>لا يوجد مخبر مسجل لهذا الأستاذ.</p></div>
+        </div>
+      </div>
+    </div>
+      <div class="interact-card">
+        <div class="interact-hdr">
+          <div class="interact-hdr-icon">💬</div>
+          <div><div class="interact-hdr-title">رسالة وتقييم</div><div class="interact-hdr-sub">تواصل مع نيابة العمادة وشاركنا رأيك</div></div>
+        </div>
+        <div class="interact-body">
+          <div class="section-block">
+            <div class="section-label">⭐ تقييم المنصة</div>
+            <div class="stars-wrap" id="p-stars">
+              <span class="star" onclick="setRating('prof',1)">★</span>
+              <span class="star" onclick="setRating('prof',2)">★</span>
+              <span class="star" onclick="setRating('prof',3)">★</span>
+              <span class="star" onclick="setRating('prof',4)">★</span>
+              <span class="star" onclick="setRating('prof',5)">★</span>
+            </div>
+            <div class="rating-label" id="p-rating-label">انقر على النجوم لتقييم المنصة</div>
+          </div>
+          <div class="section-block">
+            <div class="section-label">💡 اقتراح أو ملاحظة</div>
+            <textarea class="msg-textarea" id="p-suggestion" placeholder="اكتب اقتراحك هنا..." rows="3"></textarea>
+          </div>
+          <div class="section-block">
+            <div class="section-label">📩 رسالة إلى نيابة العمادة</div>
+            <textarea class="msg-textarea" id="p-message" placeholder="اكتب رسالتك هنا..." rows="3"></textarea>
+          </div>
+          <button class="send-btn" id="p-send-btn" onclick="sendInteract('prof')">📤 إرسال</button>
+          <div class="success-msg" id="p-success">✅ تم الإرسال بنجاح! شكراً على تواصلك.</div>
+        </div>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="clearResult('prof')">🔄 بحث جديد</button>
+  </div>
+</div>
+
+<!-- ══ STUDENT PAGE ══ -->
+<div id="page-student" class="page">
+  <div class="search-card">
+    <div class="search-icon student-icon">🎓</div>
+    <h2>بوابة الطالب</h2>
+    <p>أدخل رقم تسجيلك<br>للاطلاع على وضعية ملفك</p>
+    <div class="input-wrap">
+      <input class="mat-input" id="student-id" type="text" placeholder="رقم التسجيل"
+        maxlength="20" onkeydown="if(event.key==='Enter')doSearch('student')" oninput="clearResult('student')">
+      <button class="search-btn orange" id="student-search-btn" onclick="doSearch('student')">🔍 بحث</button>
+    </div>
+  </div>
+  <div class="loading" id="student-loading"><div class="spinner orange"></div><p>جارٍ البحث...</p></div>
+  <div class="not-found" id="student-nf">
+    <div class="nf-icon">❌</div>
+    <h3>لم يُعثر على رقم التسجيل</h3>
+    <p>تأكد من رقم تسجيلك وأعد المحاولة.</p>
+    <button class="reset-btn" onclick="clearResult('student')">🔄 بحث جديد</button>
+  </div>
+  <div class="result-wrap" id="student-result">
+    <div class="prof-hdr orange-hdr">
+      <div class="prof-avatar" id="s-avatar">--</div>
+      <div><div class="prof-name" id="s-name">--</div><div class="prof-mat" id="s-reg">--</div></div>
+    </div>
+    <div class="rtabs">
+      <button class="rtab active orange-tab" onclick="switchTab('student','info')">📋 وضعية الملف</button>
+      <button class="rtab orange-tab" onclick="switchTab('student','interact')">💬 رسالة وتقييم</button>
+    </div>
+    <div id="student-rp-info" class="rpanel active">
+      <div class="info-grid">
+        <div class="info-card"><div class="ic-label">👤 الاسم</div><div class="ic-value" id="s-name2">--</div></div>
+        <div class="info-card"><div class="ic-label">👤 اللقب</div><div class="ic-value" id="s-nom">--</div></div>
+        <div class="info-card"><div class="ic-label">📅 سنة الباكالوريا</div><div class="ic-value" id="s-bac">--</div></div>
+        <div class="info-card"><div class="ic-label">🏛️ القسم</div><div class="ic-value" id="s-dept">--</div></div>
+        <div class="info-card full"><div class="ic-label">📋 الحالة</div><div class="ic-value" id="s-status">--</div></div>
+        <div class="info-card full"><div class="ic-label">📝 ملاحظات</div><div class="ic-value" id="s-note">--</div></div>
+      </div>
+    </div>
+    <div id="student-rp-interact" class="rpanel">
+      <div class="interact-card">
+        <div class="interact-hdr">
+          <div class="interact-hdr-icon">💬</div>
+          <div><div class="interact-hdr-title">رسالة وتقييم</div><div class="interact-hdr-sub">تواصل مع نيابة العمادة وشاركنا رأيك</div></div>
+        </div>
+        <div class="interact-body">
+          <div class="section-block">
+            <div class="section-label">⭐ تقييم المنصة</div>
+            <div class="stars-wrap" id="s-stars">
+              <span class="star" onclick="setRating('student',1)">★</span>
+              <span class="star" onclick="setRating('student',2)">★</span>
+              <span class="star" onclick="setRating('student',3)">★</span>
+              <span class="star" onclick="setRating('student',4)">★</span>
+              <span class="star" onclick="setRating('student',5)">★</span>
+            </div>
+            <div class="rating-label" id="s-rating-label">انقر على النجوم لتقييم المنصة</div>
+          </div>
+          <div class="section-block">
+            <div class="section-label">💡 اقتراح أو ملاحظة</div>
+            <textarea class="msg-textarea" id="s-suggestion" placeholder="اكتب اقتراحك هنا..." rows="3"></textarea>
+          </div>
+          <div class="section-block">
+            <div class="section-label">📩 رسالة إلى نيابة العمادة</div>
+            <textarea class="msg-textarea" id="s-message" placeholder="اكتب رسالتك هنا..." rows="3"></textarea>
+          </div>
+          <button class="send-btn" id="s-send-btn" onclick="sendInteract('student')">📤 إرسال</button>
+          <div class="success-msg" id="s-success">✅ تم الإرسال بنجاح! شكراً على تواصلك.</div>
+        </div>
+      </div>
+    </div>
+    <button class="reset-btn" onclick="clearResult('student')">🔄 بحث جديد</button>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  <div class="footer-social">
+    <a href="https://facll.univ-annaba.dz/" target="_blank" class="social-btn website" title="موقع الكلية">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span>الموقع الرسمي</span>
+    </a>
+    <a href="https://www.facebook.com/letters.UbmaOfficial/" target="_blank" class="social-btn facebook" title="صفحة الفيسبوك">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+      <span>فيسبوك</span>
+    </a>
+    <a href="https://www.youtube.com/@FLL-ANNABA-n1s" target="_blank" class="social-btn youtube" title="قناة يوتيوب">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="white"/></svg>
+      <span>يوتيوب</span>
+    </a>
+    <a href="mailto:amar.sididris@univ-annaba.dz" class="social-btn email" title="البريد الإلكتروني">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <span>البريد</span>
+    </a>
+    <a href="https://wa.me/213774090455" target="_blank" class="social-btn whatsapp" title="واتساب">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+      <span>واتساب</span>
+    </a>
+  </div>
+  <div class="footer-copy">الحقوق محفوظة للمطور الأستاذ سيدي دريس عمار &nbsp;|&nbsp; جميع الحقوق محفوظة © 2026</div>
+</footer>
+
+<script>
+const PROF_SHEET_ID    = '12UhQIFQMI8bZTNj6zfDEzX9-7uhOnDX2LwcBN4dXikE';
+const STUDENT_SHEET_ID = '15fRDZaqYvXWPhb26D9cwLsuWegYdrZgJ7afcrzEJ0eE';
+const SCRIPT_URL       = 'https://script.google.com/macros/s/AKfycbxAvP8YifjbvcQzEbeuRe7JTci2_OrLwksCG8Kq114hhpkGeJt-xqUeN9SMSc3Qw3_I4Q/exec';
+
+const STAGES=[
+  {label:'قبولها من المجلس العلمي',icon:'📋',desc:'تمت الموافقة المبدئية من المجلس العلمي للقسم'},
+  {label:'إرسال المطبوعة للخبراء',icon:'📬',desc:'تم إرسال نسخ المطبوعة إلى الخبراء المحكّمين'},
+  {label:'في انتظار التقارير',icon:'⏳',desc:'بانتظار استلام تقارير الخبراء والمحكّمين'},
+  {label:'تم استلام جميع التقارير',icon:'📥',desc:'استُلمت جميع التقارير وجارٍ دراستها'},
+  {label:'المصادقة من المجلس العلمي',icon:'✅',desc:'اعتُمدت المطبوعة رسمياً من المجلس العلمي'},
+];
+const RATING_LABELS=['','ضعيف جداً','ضعيف','متوسط','جيد','ممتاز ⭐'];
+
+let currentMat={prof:'',student:''};
+let currentRating={prof:0,student:0};
+
+// ── NAVIGATION ──
+function goTo(who){
+  document.getElementById('page-welcome').classList.remove('active');
+  document.getElementById('page-'+who).classList.add('active','anim');
+  document.getElementById('back-btn').classList.add('show');
+}
+function goHome(){
+  ['prof','student'].forEach(w=>{
+    document.getElementById('page-'+w).classList.remove('active','anim');
+    clearResult(w);
+  });
+  document.getElementById('page-welcome').classList.add('active','anim');
+  document.getElementById('back-btn').classList.remove('show');
+}
+
+// ── FETCH ──
+async function fetchSheet(sheetId, sheetName){
+  const url=`https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  const res=await fetch(url);
+  const text=await res.text();
+  const json=JSON.parse(text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/)[1]);
+  const table=json.table;
+  if(!table||!table.rows||table.rows.length===0) return [];
+  const cols=table.cols.map(c=>c.label||'');
+  return table.rows.map(row=>{
+    const obj={};
+    cols.forEach((col,i)=>{
+      const cell=row.c?row.c[i]:null;
+      let val='';
+      if(cell){
+        // نفضل formatted value لأنه يعطي النص كما هو مكتوب
+        if(cell.f!=null) val=String(cell.f);
+        else if(cell.v!=null) val=String(cell.v);
+      }
+      // نحذف علامات الاقتباس الزائدة
+      obj[col]=val.replace(/^"+|"+$/g,'').trim();
+    });
+    return obj;
+  }).filter(row=>Object.values(row).some(v=>v!==''));
+}
+
+function now(){return new Date().toLocaleString('fr-DZ',{timeZone:'Africa/Algiers',hour12:false});}
+
+async function logVisit(who, mat, fullname){
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({matricule:fullname+' — '+mat,type:who==='prof'?'أستاذ':'طالب',datetime:now(),message:'',rating:'',suggestion:''})});
+  }catch(e){}
+}
+
+// ── SEARCH ──
+async function doSearch(who){
+  const id=document.getElementById(who+'-id').value.trim();
+  if(!id)return;
+  document.getElementById(who+'-loading').style.display='block';
+  document.getElementById(who+'-search-btn').disabled=true;
+  clearResult(who,true);
+  try{
+    if(who==='prof'){
+      const [tarbasRows,matbouaRows,laboRows]=await Promise.all([fetchSheet(PROF_SHEET_ID,'التربص'),fetchSheet(PROF_SHEET_ID,'المطبوعات'),fetchSheet(PROF_SHEET_ID,'المخابر')]);
+          const cleanId=v=>String(v||'').trim().replace(/^"+|"+$/g,'').toLowerCase();
+      const prof=tarbasRows.find(r=>cleanId(r['Matricule'])===id.toLowerCase());
+      const matb=matbouaRows.find(r=>cleanId(r['Matricule'])===id.toLowerCase());
+      const labo=laboRows.find(r=>cleanId(r['Matricule'])===id.toLowerCase());
+      document.getElementById('prof-loading').style.display='none';
+      document.getElementById('prof-search-btn').disabled=false;
+      if(!prof){document.getElementById('prof-nf').classList.add('show');return;}
+      currentMat.prof=id;
+      fillProf(prof,matbouaRows,labo);
+      document.getElementById('prof-result').classList.add('show');
+      logVisit('prof',id, (prof['الاسم']||'')+' '+(prof['اللقب']||''));
+    } else {
+      const rows=await fetchSheet(STUDENT_SHEET_ID,'Sheet1');
+      const student=rows.find(r=>String(r['رقم التسجيل']||'').trim().toLowerCase()===id.toLowerCase());
+      document.getElementById('student-loading').style.display='none';
+      document.getElementById('student-search-btn').disabled=false;
+      if(!student){document.getElementById('student-nf').classList.add('show');return;}
+      currentMat.student=id;
+      fillStudent(student);
+      document.getElementById('student-result').classList.add('show');
+      logVisit('student',id, (student['الاسم']||'')+' '+(student['اللقب']||''));
+    }
+  }catch(e){
+    document.getElementById(who+'-loading').style.display='none';
+    document.getElementById(who+'-search-btn').disabled=false;
+    document.getElementById(who+'-nf').classList.add('show');
+  }
+}
+
+// ── FILL PROF ──
+function fillProf(p,matbouaRows,l){
+  const prenom=p['الاسم']||''; const nom=p['اللقب']||'';
+  currentMat.prof=(prenom+' '+nom).trim()+' — '+p['Matricule'];
+  document.getElementById('p-name').textContent=prenom+' '+nom;
+  document.getElementById('p-mat').textContent='🔖 Matricule: '+p['Matricule'];
+  document.getElementById('p-dept').textContent=p['القسم']||'—';
+  document.getElementById('p-grade').textContent=p['الرتبة العلمية']||'—';
+  document.getElementById('p-pays').textContent=p['بلد الوجهة']||'—';
+  document.getElementById('p-jours').textContent=p['عدد أيام التربص']?p['عدد أيام التربص']+' يوم':'—';
+  const sb=document.getElementById('p-status'); sb.innerHTML='';
+  const st=p['الوضعية']||'';
+  if(st){const b=document.createElement('span');b.className='badge '+(st==='مقبول'?'bg-green':'bg-amber');b.textContent=(st==='مقبول'?'✅ ':'⏳ ')+st;sb.appendChild(b);}
+  else sb.textContent='—';
+  // ── MATBOUA (متعددة + مرحلة حرة) ──
+  const mb=document.getElementById('p-mat-body');
+  const matId=String(p['Matricule']).trim().replace(/^"+|"+$/g,'');
+  const cleanMat=v=>String(v||'').trim().replace(/^"+|"+$/g,'');
+
+  document.getElementById('p-mat-dept').textContent=allMatboua.length?(allMatboua[0]['القسم']||''):'لا توجد مطبوعة';
+  if(!allMatboua.length){
+    mb.innerHTML='<div class="no-data"><div class="no-data-icon">📭</div><p>لا توجد مطبوعة بيداغوجية مسجلة لهذا الأستاذ حتى الآن.</p></div>';
+  } else {
+    const cards=allMatboua.map((m,idx)=>{
+      const typeIcon=m['نوع المؤلف البيداغوجي']==='كتاب علمي'?'📗':m['نوع المؤلف البيداغوجي']==='كتاب بيداغوجي'?'📘':'📄';
+      const hI=m['الخبير الداخلي']||m['رتبة الخبير الداخلي']||m['تاريخ الإرسال داخلي'];
+      const hE=m['الخبير الخارجي']||m['رتبة الخبير الخارجي']||m['تاريخ الإرسال خارجي'];
+      return `<div style="background:white;border:1.5px solid var(--gray-300);border-radius:var(--r-md);padding:1.25rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(12,45,107,.06)">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--gray-300)">
+          <span style="font-size:24px">${typeIcon}</span>
+          <div style="flex:1">
+            <div style="font-size:15px;font-weight:700;color:var(--gray-900)">${m['اسم ولقب الأستاذ']||'—'}</div>
+            <div style="font-size:12px;color:var(--gray-500);margin-top:2px">${m['نوع المؤلف البيداغوجي']||'—'} &nbsp;|&nbsp; ${m['القسم']||'—'}</div>
+          </div>
+          <span style="background:var(--purple-pale);color:var(--purple);padding:4px 12px;border-radius:99px;font-size:12px;font-weight:700;flex-shrink:0">عمل ${idx+1}</span>
+        </div>
+        <div style="background:var(--blue-pale);border:1px solid #b5cef5;border-radius:var(--r-sm);padding:10px 14px;margin-bottom:.75rem;font-size:14px">
+          <span style="font-weight:700;color:var(--blue-dark)">📍 المرحلة الحالية:</span>
+          <div style="color:var(--gray-900);margin-top:4px;font-weight:500">${m['المرحلة']||'—'}</div>
+        </div>
+        ${(hI||hE)?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.75rem">
+          ${hI?`<div class="expert-box"><div class="expert-title">👤 الخبير الداخلي</div>
+            ${m['الخبير الداخلي']?`<div class="expert-row"><span class="expert-lbl">الاسم:</span><span class="expert-val">${m['الخبير الداخلي']}</span></div>`:''}
+            ${m['رتبة الخبير الداخلي']?`<div class="expert-row"><span class="expert-lbl">الرتبة:</span><span class="expert-val">${m['رتبة الخبير الداخلي']}</span></div>`:''}
+            ${m['تاريخ الإرسال داخلي']?`<div class="expert-row"><span class="expert-lbl">الإرسال:</span><span class="expert-val">${m['تاريخ الإرسال داخلي']}</span></div>`:''}
+          </div>`:''}
+          ${hE?`<div class="expert-box"><div class="expert-title">🏛️ الخبير الخارجي</div>
+            ${m['الخبير الخارجي']?`<div class="expert-row"><span class="expert-lbl">الاسم:</span><span class="expert-val">${m['الخبير الخارجي']}</span></div>`:''}
+            ${m['رتبة الخبير الخارجي']?`<div class="expert-row"><span class="expert-lbl">الرتبة:</span><span class="expert-val">${m['رتبة الخبير الخارجي']}</span></div>`:''}
+            ${m['تاريخ الإرسال خارجي']?`<div class="expert-row"><span class="expert-lbl">الإرسال:</span><span class="expert-val">${m['تاريخ الإرسال خارجي']}</span></div>`:''}
+          </div>`:''}
+        </div>`:''}
+        ${m['ملاحظة']?`<div class="info-box amber">📝 <strong>ملاحظة:</strong> ${m['ملاحظة']}</div>`:''}
+      </div>`;
+    });
+    mb.innerHTML=cards.join('')+`<div style="text-align:center;font-size:13px;color:var(--gray-500);padding:.5rem">إجمالي الأعمال البيداغوجية: <strong style="color:var(--purple)">${allMatboua.length}</strong></div>`;
+  }
+  // ── LABO ──
+  const lb=document.getElementById('p-lab-body');
+  document.getElementById('p-lab-name').textContent=l?(l['اسم المخبر']||''):'لا يوجد مخبر';
+  if(!l||!l['اسم المخبر']){
+    lb.innerHTML='<div class="no-data"><div class="no-data-icon">🔬</div><p>لا يوجد مخبر بحث علمي مسجل لهذا الأستاذ.</p></div>';
+  } else {
+    lb.innerHTML=`
+      <div class="info-grid">
+        <div class="info-card"><div class="ic-label">🔬 اسم المخبر</div><div class="ic-value">${l['اسم المخبر']||'—'}</div></div>
+        <div class="info-card"><div class="ic-label">🏷️ رمز المخبر</div><div class="ic-value">${l['رمز المخبر']||'—'}</div></div>
+        <div class="info-card"><div class="ic-label">👤 مدير المخبر</div><div class="ic-value">${l['مدير المخبر']||'—'}</div></div>
+        <div class="info-card full"><div class="ic-label">📋 وضعية المخبر</div><div class="ic-value">
+          <span class="badge ${l['وضعية المخبر']==='نشط'?'bg-green':l['وضعية المخبر']==='موقوف'?'bg-red':'bg-blue'}">${l['وضعية المخبر']||'—'}</span>
+        </div></div>
+      </div>`;
+  }
+  document.getElementById('p-message').value='';
+  document.getElementById('p-suggestion').value='';
+  document.getElementById('p-success').classList.remove('show');
+  document.getElementById('p-send-btn').disabled=false;
+  document.getElementById('p-send-btn').textContent='📤 إرسال';
+}
+
+// ── FILL STUDENT ──
+function fillStudent(s){
+  const prenom=s['الاسم']||''; const nom=s['اللقب']||'';
+  currentMat.student=(prenom+' '+nom).trim()+' — '+s['رقم التسجيل'];
+  document.getElementById('s-name').textContent=prenom+' '+nom;
+  document.getElementById('s-reg').textContent='🎓 رقم التسجيل: '+s['رقم التسجيل'];
+  document.getElementById('s-name2').textContent=prenom||'—';
+  document.getElementById('s-nom').textContent=nom||'—';
+  document.getElementById('s-bac').textContent=s['سنة البكالوريا']||'—';
+  document.getElementById('s-dept').textContent=s['StudentsData']||'—';
+  // status with color
+  const sb=document.getElementById('s-status'); sb.innerHTML='';
+  const st=s['الحالة/الوضعية']||s['الحالة']||s['الوضعية']||'';
+  if(st){
+    const b=document.createElement('span');
+    const isGood=st.includes('نافشت')||st.includes('منح')||st.includes('صادق');
+    const isBad=st.includes('انتظار')||st.includes('مشكل');
+    b.className='badge '+(isGood?'bg-green':isBad?'bg-amber':'bg-blue');
+    b.textContent=st; sb.appendChild(b);
+  } else sb.textContent='—';
+  document.getElementById('s-note').textContent=s['ملاحظات']||'—';
+  setRating('student',0);
+  document.getElementById('s-message').value='';
+  document.getElementById('s-suggestion').value='';
+  document.getElementById('s-success').classList.remove('show');
+  document.getElementById('s-send-btn').disabled=false;
+  document.getElementById('s-send-btn').textContent='📤 إرسال';
+}
+
+// ── TABS ──
+function switchTab(who,tab){
+  const prefix=who+'-rp-';
+  document.querySelectorAll(`[id^="${prefix}"]`).forEach(p=>p.classList.remove('active'));
+  document.getElementById(prefix+tab).classList.add('active');
+  const tabClass=who==='prof'?'blue-tab':'orange-tab';
+  const tabs=document.querySelectorAll(`#page-${who} .rtab`);
+  const names=who==='prof'?['tarbas','matboua','makhbar','interact']:['info','interact'];
+  tabs.forEach((b,i)=>b.classList.toggle('active',names[i]===tab));
+}
+
+// ── CLEAR ──
+function clearResult(who,keepLoading=false){
+  document.getElementById(who+'-result').classList.remove('show');
+  document.getElementById(who+'-nf').classList.remove('show');
+  if(!keepLoading)document.getElementById(who+'-loading').style.display='none';
+  if(who==='prof')switchTab('prof','tarbas');
+  else switchTab('student','info');
+}
+
+// ── STARS ──
+function setRating(who,n){
+  currentRating[who]=n;
+  const prefix=who==='prof'?'p':'s';
+  document.querySelectorAll(`#${prefix}-stars .star`).forEach((s,i)=>s.classList.toggle('active',i<n));
+  document.getElementById(prefix+'-rating-label').textContent=n?RATING_LABELS[n]:'انقر على النجوم لتقييم المنصة';
+}
+
+// ── SEND ──
+async function sendInteract(who){
+  const prefix=who==='prof'?'p':'s';
+  const msg=document.getElementById(prefix+'-message').value.trim();
+  const sug=document.getElementById(prefix+'-suggestion').value.trim();
+  const rat=currentRating[who];
+  if(!rat&&!msg&&!sug){alert('يرجى ملء حقل واحد على الأقل.');return;}
+  const btn=document.getElementById(prefix+'-send-btn');
+  btn.disabled=true; btn.textContent='⏳ جارٍ الإرسال...';
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        matricule:currentMat[who],
+        datetime:now(),
+        message:msg,
+        rating:rat?rat+'/5 — '+RATING_LABELS[rat]:'',
+        suggestion:sug
+      })});
+    document.getElementById(prefix+'-success').classList.add('show');
+    btn.textContent='✅ تم الإرسال';
+  }catch(e){
+    btn.disabled=false; btn.textContent='📤 إرسال';
+    alert('حدث خطأ، يرجى المحاولة مجدداً.');
   }
 }
 </script>
