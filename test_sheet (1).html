@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار الاتصال بالشيت</title>
+</head>
+<body>
+<h2>اختبار قراءة الشيت</h2>
+<button onclick="test()">اضغط للاختبار</button>
+<div id="out" style="margin-top:20px;font-family:monospace;white-space:pre-wrap"></div>
+<script>
+const ID = '12UhQIFQMI8bZTNj6zfDEzX9-7uhOnDX2LwcBN4dXikE';
+
+async function test(){
+  const out = document.getElementById('out');
+  out.textContent = 'جارٍ الاتصال...';
+  try {
+    const url = `https://docs.google.com/spreadsheets/d/${ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent('التربص')}`;
+    const res = await fetch(url);
+    const text = await res.text();
+    const match = text.match(/google\.visualization\.Query\.setResponse\(([\s\S]*)\)/);
+    if(!match){ out.textContent = 'خطأ: لم يُعثر على البيانات\n' + text.substring(0,200); return; }
+    const json = JSON.parse(match[1]);
+    const cols = json.table.cols.map(c => c.label);
+    const rows = json.table.rows.map(row =>
+      Object.fromEntries(cols.map((col,i) => [col, row.c?.[i]?.v ?? '']))
+    );
+    out.textContent = 'عدد الأعمدة: ' + cols.length + '\n';
+    out.textContent += 'الأعمدة: ' + JSON.stringify(cols) + '\n';
+    out.textContent += 'عدد الصفوف: ' + rows.length + '\n';
+    out.textContent += 'أول صف: ' + JSON.stringify(rows[0]) + '\n';
+    if(rows[1]) out.textContent += 'ثاني صف: ' + JSON.stringify(rows[1]) + '\n';
+  } catch(e) {
+    out.textContent = 'خطأ: ' + e.message;
+  }
+}
+</script>
+</body>
+</html>
